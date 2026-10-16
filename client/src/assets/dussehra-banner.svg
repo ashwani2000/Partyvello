@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1800 800" fill="none">
+  <defs>
+    <linearGradient id="sky" x1="900" y1="0" x2="900" y2="800" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#24104E"/>
+      <stop offset=".52" stop-color="#78245E"/>
+      <stop offset="1" stop-color="#F16A4D"/>
+    </linearGradient>
+    <linearGradient id="sun" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#FFF2A6"/>
+      <stop offset="1" stop-color="#FF9B4A"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#FFF1A6"/>
+      <stop offset=".5" stop-color="#FFB93F"/>
+      <stop offset="1" stop-color="#F87932"/>
+    </linearGradient>
+    <linearGradient id="effigy" x1="1260" y1="260" x2="1530" y2="670" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#7F3E95"/>
+      <stop offset="1" stop-color="#36145F"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0" cy="0" r="1" gradientTransform="matrix(0 440 -660 0 1380 590)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFB13B" stop-opacity=".55"/>
+      <stop offset="1" stop-color="#FF6D46" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="blur" x="0" y="0" width="1" height="1" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="30"/>
+    </filter>
+  </defs>
+  <path fill="url(#sky)" d="M0 0h1800v800H0z"/>
+  <path fill="url(#glow)" d="M0 0h1800v800H0z"/>
+  <circle cx="1430" cy="345" r="210" fill="url(#sun)" opacity=".92"/>
+  <circle cx="1430" cy="345" r="260" stroke="#FFD67A" stroke-opacity=".3" stroke-width="2"/>
+  <circle cx="1430" cy="345" r="300" stroke="#FFD67A" stroke-opacity=".18" stroke-width="2"/>
+  <g fill="#FFF2B0">
+    <circle cx="1070" cy="145" r="4"/><circle cx="1132" cy="208" r="3"/><circle cx="1235" cy="115" r="5"/>
+    <circle cx="1510" cy="118" r="4"/><circle cx="1668" cy="180" r="5"/><circle cx="1730" cy="275" r="3"/>
+    <circle cx="1060" cy="350" r="3"/><circle cx="1150" cy="85" r="2"/><circle cx="1600" cy="80" r="3"/>
+  </g>
+  <g stroke="#FFD978" stroke-width="4" stroke-linecap="round" opacity=".9">
+    <path d="M1175 190v42m-21-21h42m-36-15 30 30m0-30-30 30"/>
+    <path d="M1660 320v58m-29-29h58m-49-20 40 40m0-40-40 40"/>
+    <path d="M1065 270v32m-16-16h32m-27-11 22 22m0-22-22 22"/>
+    <path d="M1585 145v34m-17-17h34m-28-12 24 24m0-24-24 24"/>
+  </g>
+  <ellipse cx="1440" cy="710" rx="420" ry="95" fill="#FF873B" opacity=".42" filter="url(#blur)"/>
+  <path fill="#2A1248" d="M0 680c190-36 307-12 478 10 196 25 315-35 501-18 201 18 388 48 821-3v131H0V680Z"/>
+  <g fill="#21113B">
+    <path d="M0 604h150v196H0zM28 552h94v52H28zM54 500h42l26 52H28l26-52Z"/>
+    <path d="M1660 590h140v210h-140zM1684 540h92v50h-92zM1704 490h52l20 50h-92l20-50Z"/>
+  </g>
+  <g opacity=".88" fill="#F9B84C">
+    <path d="M84 604h12v18H84zM84 650h12v18H84zM84 696h12v18H84zM1706 590h12v18h-12zM1706 635h12v18h-12zM1706 680h12v18h-12z"/>
+  </g>
+  <g transform="translate(1270 270)">
+    <path fill="url(#effigy)" stroke="#FFCF65" stroke-width="5" d="M85 114c-34-44-22-95 14-105 26-8 50 12 55 35 11-30 41-42 65-27 32 20 23 68-4 97 47 10 72 44 66 78-6 34-32 54-66 56l-10 248H56l-9-248c-34-2-60-22-66-56-6-34 19-68 66-78Z"/>
+    <path fill="#F9B84C" d="m88 56 12-20 12 20-12 25-12-25Zm85-8 12-20 12 20-12 25-12-25Zm79 17 12-20 12 20-12 25-12-25Z"/>
+    <path stroke="#FFD978" stroke-width="6" stroke-linecap="round" d="M89 109h32m-21 29h20m55-25h30m-24 26h22m53-20h25m-22 23h21"/>
+    <path fill="#FFDEA0" d="M104 101a7 7 0 1 0 0-14 7 7 0 0 0 0 14Zm75 0a7 7 0 1 0 0-14 7 7 0 0 0 0 14Zm74 10a7 7 0 1 0 0-14 7 7 0 0 0 0 14Z"/>
+    <path fill="#FFB93F" d="m47 495 30-56 16 50 25-77 21 82 26-61 18 62H47Zm-28 35 23-43 12 39 19-57 16 61H19Zm241 0 23-43 12 39 19-57 16 61h-70Z"/>
+    <path fill="#F77739" d="m62 520 22-35 12 27 17-47 13 48 19-32 12 39H62Zm170 0 22-35 12 27 17-47 13 48 19-32 12 39h-95Z"/>
+  </g>
+  <g fill="url(#gold)">
+    <path d="M1190 755c-18-44-8-77 16-102 7 34 17 45 20 69 17-26 31-43 55-58-5 35 2 58 23 88l-114 3Zm340 7c-13-33-6-58 12-76 5 26 13 34 15 52 13-20 24-32 42-44-4 26 2 43 17 65l-86 3Z"/>
+  </g>
+  <g fill="#FFD978" opacity=".9">
+    <circle cx="1220" cy="710" r="5"/><circle cx="1253" cy="735" r="4"/><circle cx="1510" cy="720" r="5"/>
+    <circle cx="1578" cy="690" r="4"/><circle cx="1182" cy="675" r="3"/><circle cx="1610" cy="748" r="3"/>
+  </g>
+</svg>
