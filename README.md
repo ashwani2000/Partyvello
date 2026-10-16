@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Party Vello
 
 A responsive birthday-items e-commerce storefront for Party Vello, built with React, Vite, Express, and Mongo-ready backend architecture.
@@ -72,3 +73,6 @@ Deploy the client and server with a persistent MongoDB database. Configure these
 - Local development can use the server's demo in-memory data mode when MongoDB is unavailable; registered demo accounts are not persistent.
 - The backend includes structured routes, middleware, and models for an extensible production stack.
 - Admin-only routes are protected conceptually in the front-end with role checks and in the backend with role-based authorization middleware.
+=======
+# Partyvello
+>>>>>>> f7d414b62d5eb363da26f5114365e0ab53cb1de9
