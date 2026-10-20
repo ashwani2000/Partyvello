@@ -41,7 +41,14 @@ export function AppProvider({ children }) {
         if (!response.ok) {
           throw new Error(result.message || 'Unable to load products.');
         }
-        if (active) setProducts(result.items);
+        if (active) {
+  setProducts(
+    result.items.map((product) => ({
+      ...product,
+      id: product.id || product._id,
+    }))
+  );
+}
       })
       .catch((error) => {
         if (active) {
