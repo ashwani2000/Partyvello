@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { submitAuthRequest } from '../api/auth';
@@ -10,10 +10,7 @@ const roles = [
 ];
 
 export default function LoginPage() {
-  const [searchParams] = useSearchParams();
-  const requestedRole = searchParams.get('role');
-  const initialRole = roles.some((role) => role.id === requestedRole) ? requestedRole : 'retailer';
-  const [selectedRole, setSelectedRole] = useState(initialRole);
+  const [selectedRole, setSelectedRole] = useState('retailer');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -30,13 +27,9 @@ export default function LoginPage() {
     setError('');
     setIsSubmitting(true);
     try {
-      const result = await submitAuthRequest('login', form);
+      const result = await submitAuthRequest('login', { ...form, portal: selectedRole });
       setAuthenticatedUser(result.user, result.token);
-      const destination = result.user.role === 'admin'
-        ? '/admin'
-        : result.user.role === 'wholesaler'
-          ? '/wholesaler/dashboard'
-          : '/retailer/dashboard';
+      const destination = result.user.role === 'wholesaler' ? '/wholesaler/dashboard' : '/retailer/dashboard';
       navigate(destination);
     } catch (requestError) {
       setError(requestError.message);

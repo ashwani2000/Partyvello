@@ -1,3 +1,5 @@
+import { createHash, timingSafeEqual } from 'node:crypto';
+import jwt from 'jsonwebtoken';
 import mongoose from 'mongoose';
 
 import User from '../models/User.js';
@@ -11,14 +13,68 @@ const authCookieOptions = {
 };
 
 const normalizeRole = (role) => {
-  if (role === 'admin' || role === 'retailer' || role === 'wholesaler') {
-    return role;
-  }
-
-  return 'retailer';
+  return role === 'wholesaler' ? 'wholesaler' : 'retailer';
 };
 
 const ensureLowerEmail = (email) => (email ? email.toLowerCase() : email);
+
+const getLoginAccessError = (user) => {
+  if (user.status === 'suspended') {
+    return 'This account has been suspended.';
+  }
+  if (user.role === 'wholesaler' && user.status !== 'approved') {
+    return user.status === 'pending'
+      ? 'Your wholesale account is awaiting admin approval.'
+      : 'Your wholesale application has not been approved.';
+  }
+  return null;
+};
+
+const getPortalAccessError = (user, portal) => {
+  if (portal === 'admin' && user.role !== 'admin') {
+    return 'These credentials do not have administrator access.';
+  }
+  if (portal !== 'admin' && user.role === 'admin') {
+    return 'Use the admin sign-in link in the footer to access this account.';
+  }
+  if (['retailer', 'wholesaler'].includes(portal) && user.role !== portal) {
+    return `These credentials do not belong to a ${portal} account.`;
+  }
+  return null;
+};
+
+const isValidAdminGateToken = (token) => {
+  if (!token) return false;
+  try {
+    const payload = jwt.verify(token, process.env.JWT_SECRET || 'party-nest-demo-secret');
+    return payload.purpose === 'admin-gate';
+  } catch {
+    return false;
+  }
+};
+
+export const verifyAdminGate = (req, res) => {
+  const configuredPin = process.env.ADMIN_GATE_PIN;
+  if (!configuredPin) {
+    return res.status(503).json({ message: 'Admin gate is not configured on the server.' });
+  }
+
+  const { pin } = req.body;
+  if (typeof pin !== 'string' || pin.length === 0 || pin.length > 128) {
+    return res.status(400).json({ message: 'Enter the admin access PIN.' });
+  }
+
+  const expected = createHash('sha256').update(configuredPin).digest();
+  const supplied = createHash('sha256').update(pin).digest();
+  if (!timingSafeEqual(expected, supplied)) {
+    return res.status(401).json({ message: 'Incorrect admin access PIN.' });
+  }
+
+  const gateToken = jwt.sign({ purpose: 'admin-gate' }, process.env.JWT_SECRET || 'party-nest-demo-secret', {
+    expiresIn: '5m',
+  });
+  return res.json({ gateToken });
+};
 
 export const register = async (req, res, next) => {
   try {
@@ -104,12 +160,16 @@ export const register = async (req, res, next) => {
 
 export const login = async (req, res, next) => {
   try {
-    await ensureDefaultAdmin();
-    const { email, password } = req.body;
+    const { email, password, portal } = req.body;
 
     if (!email || !password) {
       return res.status(400).json({ message: 'Email and password are required.' });
     }
+    if (portal === 'admin' && !isValidAdminGateToken(req.get('X-Admin-Gate-Token'))) {
+      return res.status(403).json({ message: 'Complete the admin PIN check before signing in.' });
+    }
+
+    await ensureDefaultAdmin();
 
     const normalizedEmail = ensureLowerEmail(email);
 
@@ -125,8 +185,13 @@ export const login = async (req, res, next) => {
         return res.status(401).json({ message: 'Invalid email or password.' });
       }
 
-      if (user.status === 'suspended') {
-        return res.status(403).json({ message: 'This account has been suspended.' });
+      const accessError = getLoginAccessError(user);
+      if (accessError) {
+        return res.status(403).json({ message: accessError });
+      }
+      const portalError = getPortalAccessError(user, portal);
+      if (portalError) {
+        return res.status(403).json({ message: portalError });
       }
 
       const token = createToken(user);
@@ -149,8 +214,13 @@ export const login = async (req, res, next) => {
       return res.status(401).json({ message: 'Invalid email or password.' });
     }
 
-    if (user.status === 'suspended') {
-      return res.status(403).json({ message: 'This account has been suspended.' });
+    const accessError = getLoginAccessError(user);
+    if (accessError) {
+      return res.status(403).json({ message: accessError });
+    }
+    const portalError = getPortalAccessError(user, portal);
+    if (portalError) {
+      return res.status(403).json({ message: portalError });
     }
 
     const token = createToken(user);

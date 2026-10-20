@@ -3,7 +3,9 @@ import Layout from './components/Layout';
 import ProtectedRoute from './components/ProtectedRoute';
 import { AppProvider } from './context/AppContext';
 import AboutPage from './pages/AboutPage';
+import AdminGatePage from './pages/AdminGatePage';
 import AdminDashboard from './pages/AdminDashboard';
+import AdminLoginPage from './pages/AdminLoginPage';
 import CartPage from './pages/CartPage';
 import CheckoutPage from './pages/CheckoutPage';
 import ContactPage from './pages/ContactPage';
@@ -31,6 +33,8 @@ function App() {
             <Route path="/deals" element={<DealsPage />} />
             <Route path="/me" element={<MePage />} />
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/admin/gate" element={<AdminGatePage />} />
+            <Route path="/admin/login" element={<AdminLoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/cart" element={<CartPage />} />
             <Route path="/checkout" element={<CheckoutPage />} />

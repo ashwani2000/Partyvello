@@ -1,10 +1,11 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { demoUsers, demoProducts, demoOrders, demoInquiries } from '../data/mockData.js';
+import { budgetProducts } from '../data/budgetProducts.js';
 
 export const appData = {
   users: structuredClone(demoUsers),
-  products: structuredClone(demoProducts),
+  products: structuredClone([...demoProducts, ...budgetProducts]),
   orders: structuredClone(demoOrders),
   inquiries: structuredClone(demoInquiries),
 };

@@ -8,7 +8,7 @@ const USER_KEY = 'partypops-user';
 const TOKEN_KEY = 'partypops-token';
 
 export function AppProvider({ children }) {
-  const [products] = useState(sampleProducts);
+  const [products, setProducts] = useState(sampleProducts);
   const [cart, setCart] = useState(() => {
     const saved = localStorage.getItem(CART_KEY);
     return saved
@@ -32,6 +32,26 @@ export function AppProvider({ children }) {
   useEffect(() => {
     localStorage.setItem(CART_KEY, JSON.stringify(cart));
   }, [cart]);
+
+  useEffect(() => {
+    let active = true;
+    fetch(`${API_BASE_URL}/products`)
+      .then(async (response) => {
+        const result = await response.json();
+        if (!response.ok) {
+          throw new Error(result.message || 'Unable to load products.');
+        }
+        if (active) setProducts(result.items);
+      })
+      .catch((error) => {
+        if (active) {
+          console.error('Unable to load the product catalog; using demo products instead.', error);
+        }
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   useEffect(() => {
     if (user) {
@@ -97,6 +117,7 @@ export function AppProvider({ children }) {
   const value = useMemo(
     () => ({
       products,
+      setProducts,
       cart,
       user,
       setUser,

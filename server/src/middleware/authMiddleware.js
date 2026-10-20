@@ -30,6 +30,9 @@ export const protect = async (req, res, next) => {
     }
 
     req.user = sanitizeUser(user);
+    if (req.user.role === 'wholesaler' && req.user.status !== 'approved') {
+      return res.status(403).json({ message: 'Wholesale account access requires admin approval.' });
+    }
     next();
   } catch (error) {
     return res.status(401).json({ message: 'Invalid or expired token.' });

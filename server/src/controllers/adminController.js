@@ -1,16 +1,20 @@
 import mongoose from 'mongoose';
 
+import Product from '../models/Product.js';
 import User from '../models/User.js';
-import { appData } from '../utils/store.js';
+import Order from '../models/Order.js';
+import { appData, sanitizeUser } from '../utils/store.js';
 
 export const getUsers = async (req, res, next) => {
   try {
     if (mongoose.connection.readyState === 1) {
       const users = await User.find().sort({ createdAt: -1 }).lean();
-      return res.json({ users, total: users.length });
+      const safeUsers = users.map(sanitizeUser);
+      return res.json({ users: safeUsers, total: safeUsers.length });
     }
 
-    return res.json({ users: appData.users, total: appData.users.length });
+    const safeUsers = appData.users.map(sanitizeUser);
+    return res.json({ users: safeUsers, total: safeUsers.length });
   } catch (error) {
     next(error);
   }
@@ -33,7 +37,7 @@ export const updateUserStatus = async (req, res, next) => {
 
       user.status = status;
       await user.save();
-      return res.json({ message: 'User status updated successfully.', user });
+      return res.json({ message: 'User status updated successfully.', user: sanitizeUser(user) });
     }
 
     const index = appData.users.findIndex((user) => user.id === req.params.id || user._id === req.params.id);
@@ -42,7 +46,7 @@ export const updateUserStatus = async (req, res, next) => {
     }
 
     appData.users[index].status = status;
-    return res.json({ message: 'User status updated successfully.', user: appData.users[index] });
+    return res.json({ message: 'User status updated successfully.', user: sanitizeUser(appData.users[index]) });
   } catch (error) {
     next(error);
   }
@@ -51,18 +55,32 @@ export const updateUserStatus = async (req, res, next) => {
 export const getDashboardStats = async (req, res, next) => {
   try {
     if (mongoose.connection.readyState === 1) {
-      const [userCount, productCount] = await Promise.all([
+      const [userCount, productCount, pendingWholesalers, orderCount, revenueResult] = await Promise.all([
         User.countDocuments(),
-        (await import('../models/Product.js')).default.countDocuments(),
+        Product.countDocuments(),
+        User.countDocuments({ role: 'wholesaler', status: 'pending' }),
+        Order.countDocuments(),
+        Order.aggregate([{ $group: { _id: null, total: { $sum: '$total' } } }]),
       ]);
 
-      return res.json({ stats: { users: userCount, products: productCount } });
+      return res.json({
+        stats: {
+          users: userCount,
+          products: productCount,
+          pendingWholesalers,
+          orders: orderCount,
+          revenue: revenueResult[0]?.total || 0,
+        },
+      });
     }
 
     return res.json({
       stats: {
         users: appData.users.length,
         products: appData.products.length,
+        pendingWholesalers: appData.users.filter((user) => user.role === 'wholesaler' && user.status === 'pending').length,
+        orders: appData.orders.length,
+        revenue: appData.orders.reduce((total, order) => total + Number(order.total || 0), 0),
       },
     });
   } catch (error) {

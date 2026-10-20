@@ -3,12 +3,12 @@ const defaultApiUrl = import.meta.env.DEV ? 'http://localhost:5000/api' : '/api'
 
 export const API_BASE_URL = (configuredApiUrl || defaultApiUrl).replace(/\/+$/, '');
 
-export async function submitAuthRequest(endpoint, payload) {
+export async function submitAuthRequest(endpoint, payload, extraHeaders = {}) {
   let response;
   try {
     response = await fetch(`${API_BASE_URL}/auth/${endpoint}`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...extraHeaders },
       credentials: 'include',
       body: JSON.stringify(payload),
     });

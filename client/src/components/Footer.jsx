@@ -1,4 +1,4 @@
-import { Globe, Mail, MapPin, Phone, Sparkles } from 'lucide-react';
+import { Globe, Mail, MapPin, Phone, Shield, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export default function Footer() {
@@ -46,7 +46,10 @@ export default function Footer() {
         </div>
       </div>
       <div className="footer-bottom">
-        © 2026 Party Vello. All rights reserved.
+        <span className="footer-copyright">© 2026 Party Vello. All rights reserved.</span>
+        <Link to="/admin/gate" className="admin-footer-link" aria-label="Admin access" title="Admin access">
+          <Shield size={15} aria-hidden="true" />
+        </Link>
       </div>
     </footer>
   );

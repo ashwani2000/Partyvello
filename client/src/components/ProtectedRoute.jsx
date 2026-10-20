@@ -9,6 +9,10 @@ export default function ProtectedRoute({ children, allowedRoles = [] }) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
+  if (user.role === 'wholesaler' && user.status !== 'approved') {
+    return <Navigate to="/" replace />;
+  }
+
   if (allowedRoles.length > 0 && !allowedRoles.includes(user.role)) {
     return <Navigate to="/" replace />;
   }

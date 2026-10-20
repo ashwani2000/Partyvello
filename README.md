@@ -53,7 +53,12 @@ The backend is set up for MongoDB with a fallback demo mode that runs without a 
 ```bash
 MONGO_URI=mongodb://127.0.0.1:27017/partypops
 JWT_SECRET=replace_with_a_secure_secret
+ADMIN_GATE_PIN=replace_with_a_private_admin_gate_pin
+ADMIN_EMAIL=admin@partypops.com
+ADMIN_PASSWORD=replace_with_a_private_admin_password
 ```
+
+Set `ADMIN_PASSWORD` to a private password in `server/.env` (or the server's deployment environment), then restart the backend. The configured password is hashed before storage and applied to the configured admin account; do not commit a real password.
 
 ## Deployment environment
 
@@ -62,11 +67,14 @@ Deploy the client and server with a persistent MongoDB database. Configure these
 - **Client (build-time):** `VITE_API_URL=https://your-api-host.example/api`
 - **Server:** `MONGO_URI=<your hosted MongoDB connection string>`
 - **Server:** `JWT_SECRET=<a long, random secret>`
+- **Server:** `ADMIN_GATE_PIN=<a separate private PIN for the footer admin gate>`
 - **Server:** `CLIENT_URL=https://your-client-host.example`
 - **Server:** `NODE_ENV=production`
 - **Server (recommended):** set `ADMIN_EMAIL` and `ADMIN_PASSWORD` to replace the demo administrator credentials.
 
 `CLIENT_URL` accepts comma-separated frontend origins when deploying multiple client domains. Set `VITE_API_URL` before building the client; production builds otherwise use the same-origin `/api` path. In production, the server refuses to start without `MONGO_URI` and a configured `CLIENT_URL`, rather than accepting registrations into temporary in-memory storage. Production auth cookies require HTTPS.
+
+The footer shield first verifies `ADMIN_GATE_PIN` with the server. A successful check grants a five-minute token for the separate admin sign-in page; the PIN is never sent to or stored by the frontend. After changing `server/.env`, restart the backend process for the new setting to take effect.
 
 ## Notes
 

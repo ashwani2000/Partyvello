@@ -1,5 +1,5 @@
-import { ArrowRight, BadgePercent, Balloon, Gift, Package, PartyPopper, ShieldCheck, ShoppingBag, Sparkles, Truck } from 'lucide-react';
-import { useState } from 'react';
+import { ArrowRight, BadgePercent, Balloon, ChevronLeft, ChevronRight, Gift, Package, PartyPopper, ShieldCheck, ShoppingBag, Sparkles, Truck } from 'lucide-react';
+import { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import BudgetLinks from '../components/BudgetLinks';
 import DiwaliSaleCard from '../components/DiwaliSaleCard';
@@ -23,20 +23,38 @@ const testimonials = [
 const homeCategories = [
   { name: 'Balloons', category: 'Balloons', to: '/products/balloons-party-supplies', icon: Balloon },
   { name: 'Party Supply', category: 'Tableware', to: '/products?category=Tableware', icon: PartyPopper },
-  { name: 'Decoration Special', category: 'Decorations', to: '/products/decorations', icon: Sparkles },
+  { name: 'Decoration', category: 'Decorations', to: '/products/decorations', icon: Sparkles },
   { name: 'Return Gift', category: 'Return Gifts', to: '/products/return-gifts-accessories', icon: Gift },
   { name: 'Accessories', category: 'Accessories', to: '/products?category=Accessories', icon: Package },
-  { name: 'Under ₹149', budgetAmount: 149, to: '/products?budget=149', icon: BadgePercent },
 ];
 
 export default function HomePage() {
   const { products } = useApp();
+  const categorySliderRef = useRef(null);
+  const categories = [
+    ...homeCategories,
+    ...[...new Set(products.map((product) => product.category).filter(Boolean))]
+      .filter((category) => !homeCategories.some(
+        (item) => item.category.toLowerCase() === category.toLowerCase(),
+      ))
+      .map((category) => ({
+        name: category,
+        category,
+        to: `/products?category=${encodeURIComponent(category)}`,
+        icon: Package,
+      })),
+  ];
   const [selectedCategory, setSelectedCategory] = useState(homeCategories[0]);
-  const categoryProducts = products
+  const matchingCategoryProducts = products
     .filter((product) => selectedCategory.budgetAmount
       ? product.budgetAmount === selectedCategory.budgetAmount
-      : product.category === selectedCategory.category)
-    .slice(0, 6);
+      : product.category?.toLowerCase() === selectedCategory.category.toLowerCase())
+    .slice(0, 15);
+  const categoryProducts = selectedCategory.category === 'Tableware'
+    ? matchingCategoryProducts.slice(1)
+    : selectedCategory.category === 'Cake Toppers' && matchingCategoryProducts.length > 1
+      ? matchingCategoryProducts.map(() => matchingCategoryProducts[1])
+      : matchingCategoryProducts;
   const featuredProducts = [
     ...products.filter((item) => item.featured),
     ...products.filter((item) => !item.featured),
@@ -44,6 +62,13 @@ export default function HomePage() {
   const dealProducts = products
     .filter((item) => item.stock > 0 && item.wholesalePrice < item.price)
     .slice(0, 6);
+  const slideCategoryProducts = (direction) => {
+    if (!categorySliderRef.current) return;
+    categorySliderRef.current.scrollBy({
+      left: direction * categorySliderRef.current.clientWidth * 0.8,
+      behavior: 'smooth',
+    });
+  };
 
   return (
     <div className="page-block">
@@ -85,13 +110,18 @@ export default function HomePage() {
         </div>
         <div className="home-category-browser">
           <nav className="home-category-nav" aria-label="Browse products by category">
-            {homeCategories.map(({ name, icon: Icon, ...category }) => (
+            {categories.map(({ name, icon: Icon, ...category }) => (
               <button
                 key={name}
                 type="button"
                 className={`home-category-select ${selectedCategory.name === name ? 'active' : ''}`}
                 aria-pressed={selectedCategory.name === name}
-                onClick={() => setSelectedCategory({ name, icon: Icon, ...category })}
+                onClick={() => {
+                  setSelectedCategory({ name, icon: Icon, ...category });
+                  if (categorySliderRef.current) {
+                    categorySliderRef.current.scrollTo({ left: 0, behavior: 'smooth' });
+                  }
+                }}
               >
                 <span className="home-category-select-icon"><Icon size={20} aria-hidden="true" /></span>
                 <span>{name}</span>
@@ -102,11 +132,19 @@ export default function HomePage() {
           <div className="home-category-content">
             <div className="home-category-products-heading">
               <h3>{selectedCategory.name}</h3>
-              <Link to={selectedCategory.to} className="text-link">View all <ArrowRight size={16} /></Link>
+              <div className="budget-slider-actions">
+                <button type="button" className="budget-slider-arrow" onClick={() => slideCategoryProducts(-1)} aria-label="Previous category products">
+                  <ChevronLeft size={18} />
+                </button>
+                <button type="button" className="budget-slider-arrow" onClick={() => slideCategoryProducts(1)} aria-label="Next category products">
+                  <ChevronRight size={18} />
+                </button>
+                <Link to={selectedCategory.to} className="text-link">View all <ArrowRight size={16} /></Link>
+              </div>
             </div>
-            <div className="home-category-products">
-              {categoryProducts.map((product) => (
-                <ProductCard key={product.id} product={product} />
+            <div className="home-category-products uploaded-product-grid" ref={categorySliderRef}>
+              {categoryProducts.map((product, index) => (
+                <ProductCard key={`${product.id}-${index}`} product={product} homepageCompact />
               ))}
             </div>
           </div>
@@ -122,9 +160,9 @@ export default function HomePage() {
           <Link to="/products" className="text-link">View all products</Link>
         </div>
 
-        <div className="product-grid three-col">
+        <div className="product-grid three-col featured-home-grid">
           {featuredProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
+            <ProductCard key={product.id} product={product} featuredCartIconOnly />
           ))}
         </div>
       </section>
