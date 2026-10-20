@@ -23,9 +23,13 @@ export default function BudgetLinks({ excludedAmounts = [] }) {
     ? selectedAmount
     : visibleRanges[0]?.amount;
   const budgetProducts = products
-    .filter((product) => product.budgetAmount === activeAmount)
-    .sort((first, second) => first.price - second.price)
-    .slice(0, 15);
+  .filter((product) =>
+    Number(product.price) <= activeAmount &&
+    product.available !== false &&
+    Number(product.stock) > 0
+  )
+  .sort((first, second) => Number(first.price) - Number(second.price))
+  .slice(0, 15);
 
   const slideProducts = (direction) => {
     if (!sliderRef.current) return;
