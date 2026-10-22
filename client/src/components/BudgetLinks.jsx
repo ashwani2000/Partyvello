@@ -24,9 +24,8 @@ export default function BudgetLinks({ excludedAmounts = [] }) {
     : visibleRanges[0]?.amount;
   const budgetProducts = products
   .filter((product) =>
-    Number(product.price) <= activeAmount &&
-    product.available !== false &&
-    Number(product.stock) > 0
+    Number.isFinite(Number(product.price)) &&
+    Number(product.price) <= activeAmount
   )
   .sort((first, second) => Number(first.price) - Number(second.price))
   .slice(0, 15);

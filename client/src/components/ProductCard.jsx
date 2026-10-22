@@ -1,5 +1,5 @@
 import { Star } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import ProductCartControl from './ProductCartControl';
 
 export default function ProductCard({
@@ -8,8 +8,29 @@ export default function ProductCard({
   featuredCartIconOnly = false,
   catalogListing = false,
 }) {
+  const navigate = useNavigate();
+  const productUrl = `/product/${product.id}`;
+  const openProduct = () => navigate(productUrl, { state: { product } });
+  const handleCardClick = (event) => {
+    if (event.target.closest('a, button, input, select, textarea, [role="button"]')) return;
+    openProduct();
+  };
+  const handleCardKeyDown = (event) => {
+    if (event.key === 'Enter' && event.target === event.currentTarget) {
+      event.preventDefault();
+      openProduct();
+    }
+  };
+
   return (
-    <article className={`product-card ${homepageCompact ? 'homepage-compact-product-card' : ''} ${featuredCartIconOnly ? 'featured-home-product-card' : ''} ${catalogListing ? 'catalog-listing-product-card' : ''}`}>
+    <article
+      className={`product-card ${homepageCompact ? 'homepage-compact-product-card' : ''} ${featuredCartIconOnly ? 'featured-home-product-card' : ''} ${catalogListing ? 'catalog-listing-product-card' : ''}`}
+      role="link"
+      tabIndex={0}
+      aria-label={`View ${product.name} details`}
+      onClick={handleCardClick}
+      onKeyDown={handleCardKeyDown}
+    >
       <div className="product-image-wrap">
         <img src={product.image} alt={product.name} className="product-image" />
         <span className={`stock-badge ${product.stock === 0 ? 'out' : ''}`}>
@@ -56,7 +77,7 @@ export default function ProductCard({
               addButtonClassName="primary-btn"
             />
           )}
-          <Link to={`/product/${product.id}`} state={{ product }} className="secondary-link">
+          <Link to={productUrl} state={{ product }} className="secondary-link">
             View details
           </Link>
         </div>

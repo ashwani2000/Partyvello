@@ -1,27 +1,40 @@
 const budgetTiers = [
+  
   {
-    amount: 9,
-    minimumPrice: 1,
-    category: 'Accessories',
-    image: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=900&q=80',
+    amount: 19,
+    minimumPrice: 9,
+    category: 'Tableware',
+    image: '/images/Blue-HBD.png',
+    names: ['Happy Birthday Banner'],
+  },
+  {
+    amount: 19,
+    minimumPrice: 9,
+    category: 'Abhi',
+    image: '/images/Silver.png',
     names: [
-      'Mini Star Sticker Sheet', 'Birthday Candle Pair', 'Balloon Ribbon Bundle', 'Paper Party Hat',
-      'Mini Confetti Pouch', 'Gift Tag Set', 'Cake Sprinkle Topper', 'Party Favor Sticker Pack',
-      'Tiny Thank You Card', 'Number Candle',
+      'Silver Foil Curtain',
     ],
   },
   {
     amount: 19,
     minimumPrice: 9,
-    category: 'Tableware',
-    image: 'https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&w=900&q=80',
+    category: 'Abhi1',
+    image: '/images/Blue-HBD.png',
     names: [
-      'Printed Paper Napkin Set', 'Mini Treat Bag', 'Pastel Paper Cup', 'Birthday Badge',
-      'Colorful Paper Straw Pack', 'Small Balloon Pack', 'Party Invitation Card', 'Foil Star Sticker Pack',
-      'Cake Topper Pick', 'Paper Streamer Roll',
+      'Banner',
     ],
   },
   {
+    amount: 19,
+    minimumPrice: 9,
+    category: 'Abhi',
+    image: '/images/Silver.png',
+    names: [
+      'Banner',
+    ],
+  },
+    {
     amount: 29,
     minimumPrice: 19,
     category: 'Decorations',
@@ -91,7 +104,7 @@ export const budgetProducts = budgetTiers.flatMap((tier, tierIndex) => {
       sku: `BUD-${tierIndex + 1}${String(itemIndex + 1).padStart(2, '0')}`,
       category: tier.category,
       price,
-      wholesalePrice: Math.max(1, Math.floor(price * 0.75)),
+      wholesalePrice: 10,
       description: `${name} for birthdays, party tables, and cheerful celebrations.`,
       stock: 12 + itemIndex,
       rating: 4.3 + (itemIndex % 7) / 10,

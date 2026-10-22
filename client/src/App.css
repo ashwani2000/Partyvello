@@ -1852,6 +1852,12 @@ main {
 
 .product-card {
   overflow: hidden;
+  cursor: pointer;
+}
+
+.product-card:focus-visible {
+  outline: 3px solid #7c3aed;
+  outline-offset: 3px;
 }
 
 .product-image-wrap {

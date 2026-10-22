@@ -6,10 +6,13 @@ import { budgetProducts } from '../data/budgetProducts.js';
 export const ensureDemoProducts = async () => {
   if (mongoose.connection.readyState !== 1) return;
 
-  const operations = [...demoProducts, ...budgetProducts].map(({ id, ...product }) => ({
+  const operations = [...demoProducts, ...budgetProducts].map(({ id, image, ...product }) => ({
     updateOne: {
       filter: { sku: product.sku },
-      update: { $setOnInsert: product },
+      update: {
+        $set: { image },
+        $setOnInsert: product,
+      },
       upsert: true,
     },
   }));
